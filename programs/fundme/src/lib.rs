@@ -1,5 +1,8 @@
 use anchor_lang::prelude::*;
 
+pub mod models;
+use crate::models::*;
+
 declare_id!("49wKh7f9yc7qtch5upj52EA4dUqKNSVFb2Pm7SMVUbFH");
 
 #[program]

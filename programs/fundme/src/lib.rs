@@ -32,5 +32,7 @@ pub struct Initialize<'info> {
         space = 8+ std::mem::size_of::<UserProfile>(),
     )]
 
-    // pub userProfile
+    pub profile : Box<Account<'info, UserProfile>>,
+
+    pub system_program : Program<'info, System>,
 }

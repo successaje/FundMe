@@ -9,10 +9,14 @@ declare_id!("49wKh7f9yc7qtch5upj52EA4dUqKNSVFb2Pm7SMVUbFH");
 pub mod fundme {
     use super::*;
 
-    pub fn initialize(ctx: Context<Initialize>, name : String, age : String) -> Result<()> {
+    pub fn initialize(ctx: Context<Initialize>, name : String, created_at : String, age : u8) -> Result<()> {
 
         let profile = &mut ctx.accounts.profile;
         profile.authority = ctx.accounts.authority.key();
+        profile.age = age;
+        profile.created_at = created_at;
+        profile.name = name;
+        profile.donation_requests = 0;
 
         Ok(())
     }

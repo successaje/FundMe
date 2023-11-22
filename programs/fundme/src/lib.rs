@@ -40,3 +40,31 @@ pub struct Initialize<'info> {
 
     pub system_program : Program<'info, System>,
 }
+
+
+#[derive(Accounts)]
+pub struct Donate<'info> {
+    #[account(mut)] 
+
+    pub authority: Signer<'info>,
+
+    #[account(
+        mut,
+        seeds = [authority.key().as_ref()],
+        bump,
+        has_one = authority,
+    )]
+    pub user_profile: Box<Account<'info, UserProfile>>,
+
+    #[account(
+        init,
+        seeds = [ &[user_profile.donation_requests as u8].as_ref()],
+        bump,
+        payer = authority,
+        space = 8 + std::mem::size_of::<Donation>(),
+    )]
+    pub tournament_account: Box<Account<'info, Donation>>,
+
+    pub system_program: Program<'info, System>,
+}
+

@@ -20,6 +20,26 @@ pub mod fundme {
 
         Ok(())
     }
+
+    pub fn add_donations(
+        ctx: Context<Donate>,
+        name : String,
+        id : u8,
+        created_at : String,
+        no_of_donators: u8,
+    ) -> Result<()> {
+        let donation_account = &mut ctx.accounts.donation_account;
+        let user_profile = &mut ctx.accounts.user_profile;
+        donation_account.id = user_profile.donation_requests;
+        user_profile.donation_requests = user_profile.donation_requests.checked_add(1).unwrap();
+        donation_account.authority = ctx.accounts.authority.key();
+        donation_account.name = name;
+        donation_account.name = user_profile.name.clone();
+        donation_account.created_at = created_at;
+        donation_account.donators = Vec::with_capacity(no_of_donators.try_into().unwrap());
+        Ok(())
+    }
+
 }
 
 #[derive(Accounts)]
@@ -63,7 +83,7 @@ pub struct Donate<'info> {
         payer = authority,
         space = 8 + std::mem::size_of::<Donation>(),
     )]
-    pub tournament_account: Box<Account<'info, Donation>>,
+    pub donation_account: Box<Account<'info, Donation>>,
 
     pub system_program: Program<'info, System>,
 }

@@ -2,6 +2,9 @@ use anchor_lang::prelude::*;
 
 pub mod models;
 use crate::models::*;
+pub mod state;
+use crate::state::*;
+
 
 declare_id!("49wKh7f9yc7qtch5upj52EA4dUqKNSVFb2Pm7SMVUbFH");
 
@@ -26,6 +29,7 @@ pub mod fundme {
         name : String,
         id : u8,
         created_at : String,
+        ends_at : String,
         no_of_donators: u8,
     ) -> Result<()> {
         let donation_account = &mut ctx.accounts.donation_account;
@@ -36,6 +40,7 @@ pub mod fundme {
         donation_account.name = name;
         donation_account.name = user_profile.name.clone();
         donation_account.created_at = created_at;
+        donation_account.ends_at = ends_at;
         donation_account.donators = Vec::with_capacity(no_of_donators.try_into().unwrap());
         Ok(())
     }
@@ -87,4 +92,66 @@ pub struct Donate<'info> {
 
     pub system_program: Program<'info, System>,
 }
+
+#[derive(Accounts)]
+pub struct TransferLamports<'info> {
+    #[account(mut)]
+    pub from: Signer<'info>,
+    #[account(mut)]
+    /// CHECK:same here
+    pub to: AccountInfo<'info>,
+    pub system_program: Program<'info, System>,
+}
+
+
+#[derive(Accounts)]
+#[instruction(_bump : u8)]
+pub struct Initialisetokenpda<'info> {
+    #[account(
+        init,
+        seeds = [owner.key.as_ref(),deposit_token_account.key().as_ref()],
+        bump,
+        payer = owner,
+        token::mint = mint,
+        token::authority = statepda,
+     )]
+    pub tokenpda: Account<'info, TokenAccount>,
+    pub statepda: Account<'info, TokenState>,
+    pub mint: Account<'info, Mint>,
+    #[account(mut)]
+    pub owner: Signer<'info>,
+    #[account(mut)]
+    pub deposit_token_account: Account<'info, TokenAccount>,
+    pub system_program: Program<'info, System>,
+    pub rent: Sysvar<'info, Rent>,
+    pub token_program: Program<'info, Token>,
+}
+#[derive(Accounts)]
+pub struct SendTokenPDA<'info> {
+    #[account(mut)]
+    pub tokenpda: Account<'info, TokenAccount>,
+    pub statepda: Account<'info, TokenState>,
+    pub mint: Account<'info, Mint>,
+    #[account(mut)]
+    pub owner: Signer<'info>,
+    #[account(mut)]
+    pub deposit_token_account: Account<'info, TokenAccount>,
+    pub system_program: Program<'info, System>,
+    pub rent: Sysvar<'info, Rent>,
+    pub token_program: Program<'info, Token>,
+}
+
+
+
+// #[derive(Accounts)]
+// pub struct Add_Donation<'info> {
+//     #[account(mut)]
+
+//     pub authority : Signer<'info>,
+
+//     #[account(
+//         mut,
+
+//     )]
+// }
 

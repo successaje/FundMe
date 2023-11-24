@@ -15,5 +15,6 @@ pub struct Donation {
     pub name : String,
     pub id : u8,
     pub created_at : String,
+    pub ends_at : String,
     pub donators : Vec<Pubkey>,
 }
